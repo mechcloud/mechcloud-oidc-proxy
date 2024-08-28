@@ -1,0 +1,36 @@
+{
+   "packageManager": "yarn@4.4.1",
+   "name": "@mechcloud/oidc-proxy",
+   "version": "1.0.0",
+   "license": "AGPL-3.0-only",
+   "scripts": {
+      "install-custom": "yarn install --ignore-engines --ignore-platform",
+      "build": "vite build",
+      "wrangler-serve": "wrangler pages dev --live-reload --port 8890",
+      "deploy": "wrangler pages deploy --branch main",
+      "tail-logs": "wrangler pages deployment tail --project-name mechcloud-oidc-proxy",
+      "wrangler-version": "wrangler version"
+   },
+   "dependencies": {
+      "@mechcloud/shared-cloudflare-js": "link:../../shared/mechcloud-shared-cloudflare-js",
+      "@mechcloud/shared-js": "link:../../shared/mechcloud-shared-js",
+      "axios": "^1.7.5",
+      "digest-fetch": "^3.1.1",
+      "jose": "^5.7.0"
+   },
+   "resolutions": {
+      "@mechcloud/shared-js": "^1.0.3",
+      "@mechcloud/shared-cloudflare-js": "^1.0.4"
+   },
+   "devDependencies": {
+      "vite": "^5.4.2",
+      "wrangler": "^3.72.2",
+      "yarn-upgrade-all": "^0.7.4"
+   },
+   "yarn-upgrade-all": {
+      "ignore": [
+         "@mechcloud/shared-js",
+         "@mechcloud/shared-cloudflare-js"
+      ]
+   }
+}
