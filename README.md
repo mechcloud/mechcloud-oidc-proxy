@@ -89,5 +89,81 @@ Assuming the custom domain for above bucket is `site1.example.com`, you will nee
 ## Universal OIDC proxy for MechCloud
 This is also an OIDC proxy which is required by MechCloud to communicate with any third party API without storing long term credentials for all such third party APIs. It currently supports `Bearer` and `Digest` auth types which cover most of the APIs which you can find on the internet. This is to eliminate the possibility of leakage of third party short/long term credentials from our system and to convert our chatbots to universal chatbots so that these can communicate with any thrid party API without storing any short/long term credentials for all such APIs.
 
+
 ![image](https://github.com/user-attachments/assets/a18b8fdf-135d-460d-ada9-04ab404b13f1)
+
+
+## Endpoints 
+### Public 
+#### Generating encryption key
+```
+curl --location 'https://oidc-proxy.mechcloud.lab/public/generateEncryptionKey'
+```
+
+### Protected
+All the below endpoints can be invoked by passing a header named `Authorization` with `Bearer <mechcloud_jwt_token>` value. You can get `mechcloud_jwt_token` for the above command by logging into `MechCloud` and then entering `https://portal.mechcloud.io/oauth2/auth1` url in your browser.
+
+#### Register a host
+
+**Digest auth**
+```
+curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <mechcloud_jwt_token>' \
+--data '{
+    "id": "mongodb",
+    "host": "https://cloud.mongodb.com/api/atlas/v2/groups/<project_id>",
+    "auth": {
+        "type": "digest",
+        "username": "<mongo_username>",
+        "pwd": "<mongo_pwd>"
+    }
+}'
+```
+**Bearer token auth**
+```
+curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <mechcloud_jwt_token>' \
+--data '{
+    "id": "cloudflare",
+    "host": "",
+    "auth": {
+        "type": "bearer",
+        "token": "<cloudflare_api_token>"
+    }
+}'
+```
+
+#### Get host details 
+
+**(This is just to validate that the information was stored correctly using `Register a host` endpoint and never invoked by MechCloud. Still it is hightly recommended to put an extra check (e.g. an api key) in the code so that this endpoint can't be invoked with MechCloud jwt token only)**
+
+```
+curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts/cloudflare' \
+--header 'Authorization: Bearer <mechcloud_jwt_token>'
+```
+
+#### Update host details
+
+```
+curl --location --request PUT 'https://oidc-proxy.mechcloud.dev/api/hosts/mongo' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <mechcloud_jwt_token>' \
+--data '{
+    "host": "https://cloud.mongodb.com/api/atlas/v2/groups/<project_id>",
+    "auth": {
+        "type": "digest",
+        "username": "<mongo_username>",
+        "pwd": "<mongo_pwd>"
+    }
+}'
+```
+
+#### Deleting host details
+
+```
+curl --location --request DELETE 'https://oidc-proxy.mechcloud.lab/api/hosts/mongo' \
+--header 'Authorization: Bearer <mechcloud_jwt_token>'
+```
 
