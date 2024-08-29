@@ -57,7 +57,7 @@ curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
 }'
 ```
 
-You can get `mechcloud_jwt_token` for the above command by logging into `MechCloud` and then entering `https://portal.mechcloud.io/oauth2/auth1` url in your browser.
+You can get `mechcloud_jwt_token` for the above command by logging into `MechCloud` and then entering `https://portal.mechcloud.io/oauth2/auth1` url in your browser. <cloudflare_api_token> is the API Token which you had generated in the previous step.
 
 ## Configuring proxy in MechCloud
 This proxy can be configured only at team level in MechCloud at this moment. , you will be adding/updating this information while creating/updating a team -
@@ -89,4 +89,5 @@ Assuming the custom domain for above bucket is `site1.example.com`, you will nee
 ## Universal OIDC proxy for MechCloud
 This is also an OIDC proxy which is required by MechCloud to communicate with any third party API without storing long term credentials for all such third party APIs. It currently supports `Bearer` and `Digest` auth types which cover most of the APIs which you can find on the internet. This is to eliminate the possibility of leakage of third party short/long term credentials from our system and to convert our chatbots to universal chatbots so that these can communicate with any thrid party API without storing any short/long term credentials for all such APIs.
 
+![image](https://github.com/user-attachments/assets/a18b8fdf-135d-460d-ada9-04ab404b13f1)
 
