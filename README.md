@@ -27,6 +27,43 @@ yarn wrangler login
 yarn deploy
 ```
 
+For rest of the instructions, we will assume that this proxy is configured with `oidc-proxy.mechcloud.lab` custom domain in Cloudflare. Update this to whatever custom domain you selected for this proxy after deploying it.
+
+## Cloudflare API token for managing the cache for your static website
+In order to make sure that cache is invalidated for the pages, which will be updated through MechCloud page designer, you will need to generate an api token in Cloudflare and configure it in this proxy. 
+
+### Steps for generating a Cloudflare API token
+* Login to your cloudflare account.
+* Navigate to `My Profile` section by clicking on human icon in the upper right corner.
+* Click on `API Tokens`.
+* Click on `Create Token` button under `API Tokens` section.
+* Enter a name for your API token and make sure it is having permissions as shown below -
+
+![image](https://github.com/user-attachments/assets/15f4b9f3-ee92-4030-9df5-992b032cdb9f)
+
+### Add a host in the proxy for your Cloudflare API token
+* Use a tool of your choice to execute following command either from cli or from a UI with equivalent instructions -
+```
+curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <mechcloud_jwt_token>' \
+--data '{
+    "id": "cloudflare",
+    "host": "",
+    "auth": {
+        "type": "bearer",
+        "token": "<cloudflare_api_token>"
+    }
+}'
+```
+
+You can get `mechcloud_jwt_token` for the above command by logging into `MechCloud` and then entering `https://portal.mechcloud.io/oauth2/auth1` url in your browser.
+
+## Configuring proxy in MechCloud
+This proxy can be configured only at team level in MechCloud at this moment. , you will be adding/updating this information while creating/updating a team -
+
+![image](https://github.com/user-attachments/assets/66115475-36c9-4ad4-820a-1f02362e4ac9)
+
 ## Proxy for MechCloud site builder
 This proxy is used by MechCloud to store the static version of pages designed through its page builder into a Cloudflare R2 bucket which you will need to map to a site at the time of creating it in the MechCloud. It is also used to purge the Cloudflare cache as and when the static site content is updated.
 
