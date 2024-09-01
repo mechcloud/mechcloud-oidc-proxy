@@ -48,7 +48,16 @@ export async function onRequestPost(context) {
             const plainData = await mcDecrypt(hostData, encodedKey)
             const hostMetadata = JSON.parse(plainData)
 
-            let url = `https://api.cloudflare.com/client/v4/zones/${context.env.ZONE_ID}/purge_cache`
+            const domainName = context.env.DOMAIN_NAME;
+            const zoneResponse = await fetch(`https://api.cloudflare.com/client/v4/zones?name=${domainName}`, {
+                headers: {
+                    'Authorization': `Bearer ${hostMetadata.auth.token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const zoneData = await zoneResponse.json();
+            const zoneId = zoneData.result[0].id;
+            let url = `https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`;
 
             mcCfLog(`${MODULE_NAME} :: Target url : ` + url)
 
