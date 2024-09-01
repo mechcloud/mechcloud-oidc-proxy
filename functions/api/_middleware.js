@@ -5,7 +5,6 @@ import {
 } from '@mechcloud/shared-js'
 import { 
    mcCfGetFailureResponse,
-   mcCfGetResponse,
    mcCfGetUnauthorizedResponse,
    mcInvokeProxyGetUserDetails 
 } from '@mechcloud/shared-cloudflare-js'
@@ -29,7 +28,7 @@ async function validate_token(context) {
          
          mcCfLogError(msg)
 
-         return mcCfGetUnauthorizedResponse(msg, 403)
+         return mcCfGetUnauthorizedResponse(msg)
       }
 
       return await context.next()
