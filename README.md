@@ -6,7 +6,7 @@ This proxy is configured to trust MechCloud IdP (powered by `Auth0`) by default 
 ## Cloudflare secrets required for this proxy
 This proxy has dependency on the following Cloudflare secrets (encrypted environment variables) -
 * ENCRYPTION_KEY - It can be generated using an [endpoint](#generating-encryption-key) provided by this proxy only.
-* DOMAIN_NAME - Root domain (e.g. `example.com`) whose subdomains will be mapped to the Cloudflare R2 buckets.
+* DOMAIN_NAME - Root domain (e.g. `mechcloud.lab`) whose subdomains will be mapped to the Cloudflare R2 buckets.
 * ALLOWED_USERS - Comma seperated list of email ids of users whose are allowed to invoke this proxy from MechCloud. All such users must be registered in MechCloud.
 
 ## Deploying this proxy in your Cloudflare account
