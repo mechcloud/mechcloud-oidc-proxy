@@ -1,10 +1,12 @@
 import { 
+    mcCfLog,
+    McErrorCodes,
     mcGetPrettyPrint, 
     mcGetQueryParam 
 } from "@mechcloud/shared-js"
 import { 
-    mcGetFailureResponse,
-    mcGetResponse
+    mcCfGetFailureResponse,
+    mcCfGetResponse
 } from '@mechcloud/shared-cloudflare-js'
  
 const MODULE_NAME = 'listBucketItems.js'
@@ -22,11 +24,13 @@ export async function onRequestGet(context) {
         })
         mcCfLog(`${MODULE_NAME} :: Bucket items : \n`, mcGetPrettyPrint(files))
 
-        return mcGetResponse({files})
+        return mcCfGetResponse({files})
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
         
-        return mcGetFailureResponse(McErrorCodes.UNKNOWN_ERROR, 'Unknown error.')
+        return mcCfGetFailureResponse(
+            McErrorCodes.UNKNOWN_ERROR, 'Unknown error.'
+        )
     }
 }
 

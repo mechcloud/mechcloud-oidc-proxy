@@ -4,8 +4,8 @@ import {
    mcGetPrettyPrint
 } from "@mechcloud/shared-js"
 import { 
-   mcGetResponse, 
-   mcGetFailureResponse,
+   mcCfGetResponse, 
+   mcCfGetFailureResponse,
    mcDecrypt,
    mcEncrypt
 } from "@mechcloud/shared-cloudflare-js"
@@ -19,21 +19,21 @@ export async function onRequestGet(context) {
    const hostId = context.params.hostId
    mcCfLog(`${MODULE_NAME} :: Host id : ` + hostId)
 
-   // console.log(context.env)
+   // mcCfLog(context.env)
    
    try {
       const encodedKey = context.env.ENCRYPTION_KEY
-      // console.log('Encoded key : ' + encodedKey)
+      // mcCfLog('Encoded key : ' + encodedKey)
       
       const encrytedData = await context.env.HOSTS.get(hostId)
       if(encrytedData) {
-         console.log('Encrypted data from kv : ' + encrytedData)
+         mcCfLog('Encrypted data from kv : ' + encrytedData)
          
          const plainData = await mcDecrypt(encrytedData, encodedKey)
 
-         return mcGetResponse(JSON.parse(plainData))
+         return mcCfGetResponse(JSON.parse(plainData))
       } else {
-         return mcGetFailureResponse(
+         return mcCfGetFailureResponse(
             McErrorCodes.RECORD_NOT_FOUND, 
             `Host '${hostId}' not found.`
          )
@@ -41,7 +41,7 @@ export async function onRequestGet(context) {
    } catch (err) {
       mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
 
-      return mcGetFailureResponse(
+      return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
          'Internal error.'
       )
@@ -67,15 +67,15 @@ export async function onRequestPut(context) {
          const inputData = JSON.stringify(originalPayload)
 
          const encodedKey = context.env.ENCRYPTION_KEY
-         // console.log('Encoded key : ' + encodedKey)
+         // mcCfLog('Encoded key : ' + encodedKey)
 
          const encryptedData = await mcEncrypt(inputData, encodedKey)
 
          await context.env.HOSTS.put(hostId, encryptedData)
 
-         return mcGetResponse({msg: 'Host details updated successfully.'})
+         return mcCfGetResponse({msg: 'Host details updated successfully.'})
       } else {
-         return mcGetFailureResponse(
+         return mcCfGetFailureResponse(
             McErrorCodes.RECORD_NOT_FOUND, 
             `Host '${hostId}' not found.`
          )
@@ -83,7 +83,7 @@ export async function onRequestPut(context) {
    } catch (err) {
       mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
 
-      return mcGetFailureResponse(
+      return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
          'Internal error.'
       )
@@ -103,9 +103,9 @@ export async function onRequestDelete(context) {
       if(encryptedData) {
          await context.env.HOSTS.delete(hostId)
 
-         return mcGetResponse({ msg: `Host '${hostId}' deleted successfully` })
+         return mcCfGetResponse({ msg: `Host '${hostId}' deleted successfully` })
       } else {
-         return mcGetFailureResponse(
+         return mcCfGetFailureResponse(
             McErrorCodes.RECORD_NOT_FOUND, 
             `Host '${hostId}' not found.`
          )
@@ -113,7 +113,7 @@ export async function onRequestDelete(context) {
    } catch (err) {
       mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
       
-      return mcGetFailureResponse(
+      return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
          'Internal error.'
       )

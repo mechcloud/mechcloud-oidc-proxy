@@ -4,8 +4,8 @@ import {
 } from "@mechcloud/shared-js"
 import { 
     mcEncrypt,
-    mcGetFailureResponse, 
-    mcGetResponse
+    mcCfGetFailureResponse, 
+    mcCfGetResponse
 } from '@mechcloud/shared-cloudflare-js'
  
 const MODULE_NAME = 'hosts.js'
@@ -20,14 +20,14 @@ export async function onRequestPost(context) {
         const hostData = await context.env.HOSTS.get(originalPayload.id)
       
         if(hostData) {
-            return mcGetFailureResponse(
+            return mcCfGetFailureResponse(
                 McErrorCodes.DUPLICATE_RECORD, 
                 `Host '${originalPayload.id}' already exists.`
             )
         }
         // const encodedKey = await mcGenerateKey()
         
-        // return mcGetResponse({'encodedKey': encodedKey})
+        // return mcCfGetResponse({'encodedKey': encodedKey})
 
         const encodedKey = context.env.ENCRYPTION_KEY
         // console.log('Encoded key : ' + encodedKey)
@@ -41,7 +41,7 @@ export async function onRequestPost(context) {
         // const decryptedData = await mcDecrypt(encryptedData, encodedKey)
         // console.log('Decrypted data : ' + decryptedData)
         
-        // return mcGetResponse({'msg': 'Host registered successfully.'})
+        // return mcCfGetResponse({'msg': 'Host registered successfully.'})
 
         const inputData = JSON.stringify(originalPayload)
         const encryptedData = await mcEncrypt(inputData, encodedKey)
@@ -50,11 +50,11 @@ export async function onRequestPost(context) {
 
         // console.log('Encrypted data from kv : ' + await context.env.hosts.get(originalPayload.id))
 
-        return mcGetResponse({'msg': 'Host registered successfully.'})
+        return mcCfGetResponse({'msg': 'Host registered successfully.'})
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
         
-        return mcGetFailureResponse(
+        return mcCfGetFailureResponse(
             McErrorCodes.UNKNOWN_ERROR, 
             'Unknown error.'
         )

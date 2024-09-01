@@ -7,8 +7,8 @@
 
 import {
     mcDecrypt,
-    mcGetFailureResponse,
-    mcGetResponse
+    mcCfGetFailureResponse,
+    mcCfGetResponse
 } from "@mechcloud/shared-cloudflare-js"
 import {
     mcCfLog,
@@ -61,7 +61,7 @@ export async function onRequestPost(context) {
             let url = hostMetadata.host + payload.uri
 
             if(payload.queryParams) {
-                const searchParams = new URLSearchParams(params)
+                const searchParams = new URLSearchParams(payload.queryParams)
                 url += `?${searchParams.toString()}`
             }
 
@@ -149,18 +149,18 @@ export async function onRequestPost(context) {
 
             mcCfLog(`${MODULE_NAME} :: Response code from target url : `, resp1.status)
         
-            return mcGetResponse(
+            return mcCfGetResponse(
                 {
                     status: resp1.status,
                     data: await resp1.json()
                 }
             )
         } else {
-            return mcGetFailureResponse(McErrorCodes.RECORD_NOT_FOUND, `Host '${hostId}' not found.`)
+            return mcCfGetFailureResponse(McErrorCodes.RECORD_NOT_FOUND, `Host '${hostId}' not found.`)
         }
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
 
-        return mcGetFailureResponse(McErrorCodes.UNKNOWN_ERROR, 'Unknown error.')
+        return mcCfGetFailureResponse(McErrorCodes.UNKNOWN_ERROR, 'Unknown error.')
     }
 }

@@ -1,10 +1,12 @@
 import { 
    mcCfLog, 
+   mcCfLogError, 
    McErrorCodes 
 } from '@mechcloud/shared-js'
 import { 
-   mcGetFailureResponse,
-   mcGetResponse,
+   mcCfGetFailureResponse,
+   mcCfGetResponse,
+   mcCfGetUnauthorizedResponse,
    mcInvokeProxyGetUserDetails 
 } from '@mechcloud/shared-cloudflare-js'
 
@@ -23,14 +25,18 @@ async function validate_token(context) {
       mcCfLog(`${MODULE_NAME} :: Email : ` + email)
 
       if(!context.env.ALLOWED_USERS.split(',').includes(email)) {
-         return mcGetResponse(`User '${email}' is not authorized.`, 403)
+         const msg = `User '${email}' is not authorized.`
+         
+         mcCfLogError(msg)
+
+         return mcCfGetUnauthorizedResponse(msg, 403)
       }
 
       return await context.next()
    } catch (err) {
       mcCfLog(`${MODULE_NAME} :: _middleware.js : ${err.message}\n${err.stack}`)
 
-      return mcGetFailureResponse(
+      return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
          'Internal error occured.',
          500

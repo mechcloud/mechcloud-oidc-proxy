@@ -1,9 +1,11 @@
 import { 
     mcGetQueryParam,
-    mcCfLog
+    mcCfLog,
+    McErrorCodes
 } from "@mechcloud/shared-js"
 import { 
-    mcGetFailureResponse
+    mcCfGetResponse,
+    mcCfGetFailureResponse
 } from '@mechcloud/shared-cloudflare-js'
  
 const MODULE_NAME = 'deleteFileFromBucket.js'
@@ -17,11 +19,11 @@ export async function onRequestDelete(context) {
 
         await context.env[bucketName].delete(uri);
 
-        return mcGetResponse({'msg': 'Item deleted successfully.'})
+        return mcCfGetResponse({'msg': 'Item deleted successfully.'})
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
         
-        return mcGetFailureResponse(
+        return mcCfGetFailureResponse(
             McErrorCodes.UNKNOWN_ERROR, 
             'Unknown error.'
         )

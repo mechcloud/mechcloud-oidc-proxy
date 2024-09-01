@@ -8,11 +8,19 @@ OAUTH2_PROXY_HOST = "https://portal-auth-proxy.mechcloud.io"
 
 [[kv_namespaces]]
 binding = "HOSTS"
-id = ""
+id = "179ac79e07a04b088a6d183cee2e3c14"
 
 [[r2_buckets]]
-binding = ""
-bucket_name = ""
+binding = "APP1-DEV"
+bucket_name = "app1-dev"
+
+[[r2_buckets]]
+binding = "APP1"
+bucket_name = "app1"
+
+[[r2_buckets]]
+binding = "DEMO-STATIC1"
+bucket_name = "demo-static1"
 
 
 

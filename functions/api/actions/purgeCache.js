@@ -12,8 +12,8 @@ import {
 } from "@mechcloud/shared-js"
 import { 
     mcDecrypt,
-    mcGetFailureResponse, 
-    mcGetResponse 
+    mcCfGetFailureResponse, 
+    mcCfGetResponse 
 } from "@mechcloud/shared-cloudflare-js" 
 
 const MODULE_NAME = 'purgeCache.js'
@@ -70,14 +70,14 @@ export async function onRequestPost(context) {
 
             mcCfLog(`${MODULE_NAME} :: Response code from target url : `, resp.status)
         
-            return mcGetResponse(
+            return mcCfGetResponse(
                 {
                     status: resp.status,
                     data: await resp.json()
                 }
             )
         } else {
-            return mcGetFailureResponse(
+            return mcCfGetFailureResponse(
                 McErrorCodes.RECORD_NOT_FOUND, 
                 `Host '${hostId}' not found.`
             )
@@ -85,7 +85,7 @@ export async function onRequestPost(context) {
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
 
-        return mcGetFailureResponse(
+        return mcCfGetFailureResponse(
             McErrorCodes.UNKNOWN_ERROR, 
             'Unknown error.'
         )

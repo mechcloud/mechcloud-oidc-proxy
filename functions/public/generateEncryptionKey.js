@@ -1,10 +1,11 @@
 import { 
-    mcCfLog 
+    mcCfLog, 
+    McErrorCodes
 } from '@mechcloud/shared-js'
 
 import { 
-    mcGetResponse, 
-    mcGetFailureResponse,
+    mcCfGetResponse, 
+    mcCfGetFailureResponse,
     mcGenerateKey,
  } from "@mechcloud/shared-cloudflare-js"
 
@@ -16,10 +17,13 @@ import {
     try {
         const encodedKey = await mcGenerateKey()
         
-        return mcGetResponse({ key: encodedKey })
+        return mcCfGetResponse({ key: encodedKey })
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
 
-        return mcGetFailureResponse(McErrorCodes.UNKNOWN_ERROR, 'Unknown error.')
+        return mcCfGetFailureResponse(
+            McErrorCodes.UNKNOWN_ERROR, 
+            'Unknown error.'
+        )
     }
  }

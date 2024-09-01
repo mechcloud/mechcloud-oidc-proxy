@@ -1,10 +1,11 @@
 import { 
     mcCfLog, 
+    McErrorCodes, 
     mcGetQueryParam 
 } from "@mechcloud/shared-js"
 import { 
-    mcGetResponse,
-    mcGetFailureResponse
+    mcCfGetResponse,
+    mcCfGetFailureResponse
 } from '@mechcloud/shared-cloudflare-js'
  
 const MODULE_NAME = 'uploadFileToBucket.js'
@@ -22,14 +23,17 @@ export async function onRequestPost(context) {
         await context.env[bucketName].put(uri, atob(fileConent))
 
         if(obj) {
-            return mcGetResponse({'action': 'updated'})
+            return mcCfGetResponse({'action': 'updated'})
         }
 
-        return mcGetResponse({'action': 'created'})
+        return mcCfGetResponse({'action': 'created'})
     } catch (err) {
         mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
         
-        return mcGetFailureResponse(McErrorCodes.UNKNOWN_ERROR, 'Unknown error.')
+        return mcCfGetFailureResponse(
+            McErrorCodes.UNKNOWN_ERROR, 
+            'Unknown error.'
+        )
     }
 }
 
