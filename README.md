@@ -60,7 +60,7 @@ curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
 You can get `mechcloud_jwt_token` for the above command by logging into `MechCloud` and then entering `https://portal.mechcloud.io/oauth2/auth1` url in your browser. <cloudflare_api_token> is the API Token which you had generated in the previous step.
 
 ## Configuring proxy in MechCloud
-This proxy can be configured only at team level in MechCloud at this moment. , you will be adding/updating this information while creating/updating a team -
+This proxy can be configured only at the team level in MechCloud at this moment. You will need to add/update this information while creating/updating a team -
 
 ![image](https://github.com/user-attachments/assets/66115475-36c9-4ad4-820a-1f02362e4ac9)
 
@@ -82,7 +82,7 @@ bucket_name = "site2-bucket-5678"
 
 * Value of binding and bucket_name need NOT to be same and only value of `binding` attribute in the above configuration is used while configuring a site in MechCloud. You can choose any complex name for your bucket as far as it is supported by Cloudflare.
 
-Assuming the custom domain for above bucket is `site1.example.com`, you will need to configure the `binding` and `custom domain` for the bucket in MechCloud as shown in the below screenshot -
+Assuming the custom domain for above bucket is `site1.example.com`, you will need to configure the `binding` and `custom domain` for the bucket in MechCloud as shown in the below screenshot at the site level -
 
 ![image](https://github.com/user-attachments/assets/e7a13cc3-8526-41ac-ad50-d5904d5d0bb7)
 
