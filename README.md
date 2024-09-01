@@ -82,7 +82,7 @@ bucket_name = "site2-bucket-5678"
 
 * Value of binding and bucket_name need NOT to be same and only value of `binding` attribute in the above configuration is used while configuring a site in MechCloud. You can choose any complex name for your bucket as far as it is supported by Cloudflare.
 
-Assuming the custom domain for above bucket is `site1.example.com`, you will need to configure the `binding` and `custom domain` for the bucket in MechCloud as shown in the below screenshot at the site level -
+Assuming the custom domain for above bucket is `site1.example.com`, you will need to configure the `binding` and `custom domain` for the bucket in MechCloud at the site level as shown in the below screenshot -
 
 ![image](https://github.com/user-attachments/assets/e7a13cc3-8526-41ac-ad50-d5904d5d0bb7)
 
