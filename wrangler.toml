@@ -7,7 +7,7 @@ pages_build_output_dir = "./dist"
 OAUTH2_PROXY_HOST = "https://portal-auth-proxy.mechcloud.io"
 
 [[kv_namespaces]]
-binding = "HOSTS"
+binding = "ACCOUNTS"
 id = ""
 
 [[r2_buckets]]
