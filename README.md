@@ -15,16 +15,21 @@ This proxy has dependency on the following Cloudflare secrets (encrypted environ
 ```
 cd mechcloud-oidc-proxy
 
-yarn install
+pnpm install
 
-yarn build 
+pnpm build 
 ```
 
 * Login to your Cloudflare account using wrangler and deploy this project -
 ```
-yarn wrangler login
+pnpm wrangler login
 
-yarn deploy
+pnpm deploy1
+```
+
+* Create `ACCOUNTS` namespace in your Cloudflare account -
+```
+pnpm wrangler kv:namespace create ACCOUNTS
 ```
 
 For rest of the instructions, we will assume that this proxy is configured with `oidc-proxy.mechcloud.lab` custom domain in Cloudflare. Update this to whatever custom domain you selected for this proxy after deploying it.
@@ -44,12 +49,12 @@ In order to make sure that cache is invalidated for the pages, which will be upd
 ### Add a host in the proxy for your Cloudflare API token
 * Use a tool of your choice to execute following command either from cli or from a UI with equivalent instructions -
 ```
-curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
+curl --location 'https://oidc-proxy.mechcloud.lab/api/accounts' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <mechcloud_jwt_token>' \
 --data '{
-    "id": "cloudflare",
-    "host": "",
+    "id": "cloudflare_account1",
+    "host": "https://api.cloudflare.com/client/v4",
     "auth": {
         "type": "bearer",
         "token": "<cloudflare_api_token>"
@@ -103,16 +108,15 @@ curl --location 'https://oidc-proxy.mechcloud.lab/public/generateEncryptionKey'
 ### Protected
 All the below endpoints can be invoked by passing a header named `Authorization` with `Bearer <mechcloud_jwt_token>` value. You can get `mechcloud_jwt_token` for the above command by logging into `MechCloud` and then entering `https://portal.mechcloud.io/oauth2/auth1` url in your browser.
 
-#### Register a host
+#### Register an account
 
 **Digest auth**
 ```
-curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
+curl --location 'https://oidc-proxy.mechcloud.lab/api/accounts' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <mechcloud_jwt_token>' \
 --data '{
-    "id": "mongodb",
-    "host": "https://cloud.mongodb.com/api/atlas/v2/groups/<project_id>",
+    "id": "mongodb_account1",
     "auth": {
         "type": "digest",
         "username": "<mongo_username>",
@@ -122,12 +126,11 @@ curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
 ```
 **Bearer token auth**
 ```
-curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
+curl --location 'https://oidc-proxy.mechcloud.lab/api/accounts' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <mechcloud_jwt_token>' \
 --data '{
-    "id": "cloudflare",
-    "host": "",
+    "id": "cloudflare_account1",
     "auth": {
         "type": "bearer",
         "token": "<cloudflare_api_token>"
@@ -135,23 +138,22 @@ curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts' \
 }'
 ```
 
-#### Get host details 
+#### Get account details 
 
-**(This is just to validate that the information was stored correctly using `Register a host` endpoint and never invoked by MechCloud. Still it is hightly recommended to put an extra check (e.g. an api key) in the code so that this endpoint can't be invoked with MechCloud jwt token only)**
+**(This is just to validate that the information was stored correctly using `Register an account` endpoint and never invoked by MechCloud. Still it is hightly recommended to put an extra check (e.g. an api key) in the code so that this endpoint can't be invoked with MechCloud jwt token only)**
 
 ```
-curl --location 'https://oidc-proxy.mechcloud.lab/api/hosts/cloudflare' \
+curl --location 'https://oidc-proxy.mechcloud.lab/api/accounts/cloudflare_account1' \
 --header 'Authorization: Bearer <mechcloud_jwt_token>'
 ```
 
-#### Update host details
+#### Update account details
 
 ```
-curl --location --request PUT 'https://oidc-proxy.mechcloud.dev/api/hosts/mongo' \
+curl --location --request PUT 'https://oidc-proxy.mechcloud.dev/api/accounts/cloudflare_account1' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <mechcloud_jwt_token>' \
 --data '{
-    "host": "https://cloud.mongodb.com/api/atlas/v2/groups/<project_id>",
     "auth": {
         "type": "digest",
         "username": "<mongo_username>",
@@ -160,10 +162,10 @@ curl --location --request PUT 'https://oidc-proxy.mechcloud.dev/api/hosts/mongo'
 }'
 ```
 
-#### Deleting host details
+#### Deleting account
 
 ```
-curl --location --request DELETE 'https://oidc-proxy.mechcloud.lab/api/hosts/mongo' \
+curl --location --request DELETE 'https://oidc-proxy.mechcloud.lab/api/accounts/cloudflare_account1' \
 --header 'Authorization: Bearer <mechcloud_jwt_token>'
 ```
 

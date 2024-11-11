@@ -1,36 +1,35 @@
 {
-   "packageManager": "yarn@4.4.1",
    "name": "@mechcloud/oidc-proxy",
    "version": "1.0.0",
    "type": "module",
    "license": "AGPL-3.0-only",
    "scripts": {
-      "install-custom": "yarn install --ignore-engines --ignore-platform",
-      "lint": "run eslint --quiet functions/",
-      "build": "run eslint --quiet functions/ && vite build",
+      "lint": "eslint --quiet functions/",
+      "lint-build": "eslint --quiet functions/ && vite build",
+      "build": "vite build",
       "wrangler-serve": "wrangler pages dev --live-reload --port 8890",
-      "deploy": "wrangler pages deploy --branch main",
+      "deploy1": "wrangler pages deploy --branch main",
       "tail-logs": "wrangler pages deployment tail --project-name mechcloud-oidc-proxy",
       "wrangler-version": "wrangler version"
    },
    "dependencies": {
-      "@mechcloud/shared-cloudflare-js": "link:../../shared/mechcloud-shared-cloudflare-js",
-      "@mechcloud/shared-js": "link:../../shared/mechcloud-shared-js",
-      "axios": "^1.7.5",
+      "@mechcloud/shared-cloudflare-js": "link:..\\..\\shared\\mechcloud-shared-cloudflare-js",
+      "@mechcloud/shared-js": "link:..\\..\\shared\\mechcloud-shared-js",
+      "axios": "^1.7.7",
       "digest-fetch": "^3.1.1",
-      "jose": "^5.7.0"
+      "jose": "^5.9.6"
    },
-   "resolutions": {
+   "resolutions1": {
       "@mechcloud/shared-js": "^1.0.4",
       "@mechcloud/shared-cloudflare-js": "^1.0.5"
    },
    "devDependencies": {
-      "@eslint/js": "^9.9.1",
-      "eslint": "^9.9.1",
+      "@eslint/js": "^9.14.0",
+      "eslint": "^9.14.0",
       "eslint-plugin-cflint": "^1.0.0",
-      "globals": "^15.9.0",
-      "vite": "^5.4.2",
-      "wrangler": "^3.72.2",
+      "globals": "^15.11.0",
+      "vite": "^5.4.10",
+      "wrangler": "^3.84.1",
       "yarn-upgrade-all": "^0.7.4"
    },
    "yarn-upgrade-all": {

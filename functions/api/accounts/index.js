@@ -8,21 +8,21 @@ import {
     mcCfGetResponse
 } from '@mechcloud/shared-cloudflare-js'
  
-const MODULE_NAME = 'hosts.js'
+const logPrefix = 'accounts.js ::'
 
 export async function onRequestPost(context) {
-    mcCfLog(`${MODULE_NAME} :: Registering host ..`)
+    mcCfLog(logPrefix, `Registering account ..`)
  
     const originalPayload = await context.request.json()
-    // mcCfLog(`${MODULE_NAME} :: Original host payload : `, mcGetPrettyPrint(originalPayload))
+    // mcCfLog(logPrefix, `Original account payload : `, mcGetPrettyPrint(originalPayload))
  
     try {
-        const hostData = await context.env.HOSTS.get(originalPayload.id)
+        const accountData = await context.env.ACCOUNTS.get(originalPayload.id)
       
-        if(hostData) {
+        if(accountData) {
             return mcCfGetFailureResponse(
                 McErrorCodes.DUPLICATE_RECORD, 
-                `Host '${originalPayload.id}' already exists.`
+                `Account '${originalPayload.id}' already exists.`
             )
         }
         // const encodedKey = await mcGenerateKey()
@@ -41,18 +41,18 @@ export async function onRequestPost(context) {
         // const decryptedData = await mcDecrypt(encryptedData, encodedKey)
         // console.log('Decrypted data : ' + decryptedData)
         
-        // return mcCfGetResponse({'msg': 'Host registered successfully.'})
+        // return mcCfGetResponse({'msg': 'Account registered successfully.'})
 
         const inputData = JSON.stringify(originalPayload)
         const encryptedData = await mcEncrypt(inputData, encodedKey)
 
-        await context.env.HOSTS.put(originalPayload.id, encryptedData)
+        await context.env.ACCOUNTS.put(originalPayload.id, encryptedData)
 
-        // console.log('Encrypted data from kv : ' + await context.env.hosts.get(originalPayload.id))
+        // console.log('Encrypted data from kv : ' + await context.env.ACCOUNTS.get(originalPayload.id))
 
-        return mcCfGetResponse({'msg': 'Host registered successfully.'})
+        return mcCfGetResponse({'msg': 'Account registered successfully.'})
     } catch (err) {
-        mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
+        mcCfLog(logPrefix, `${err.message}\n${err.stack}`)
         
         return mcCfGetFailureResponse(
             McErrorCodes.UNKNOWN_ERROR, 

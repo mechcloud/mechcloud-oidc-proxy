@@ -17,7 +17,7 @@ import {
     mcGetQueryParam
 } from "@mechcloud/shared-js"
 
-const MODULE_NAME = 'invokeEndpoint.js'
+const logPrefix = 'invokeEndpoint.js ::'
 
 async function digestHash(data) {
     const encoder = new TextEncoder()
@@ -42,40 +42,44 @@ async function generateCnonce() {
 // }
 
 export async function onRequestPost(context) {
-    mcCfLog(`${MODULE_NAME} :: Invoking endpoint ..`)
+    mcCfLog(logPrefix, `Invoking endpoint ..`)
 
     const payload = await context.request.json()
-    mcCfLog(`${MODULE_NAME} :: Original payload : \n`, mcGetPrettyPrint(payload))
+    mcCfLog(logPrefix, `Original payload : \n`, mcGetPrettyPrint(payload))
 
     try {
-        const hostId = mcGetQueryParam(context.request.url, 'hostId')
-        const hostData = await context.env.HOSTS.get(hostId)
+        const accountId = mcGetQueryParam(context.request.url, 'accountId')
+        let accountMetadata = await context.env.ACCOUNTS.get(accountId)
 
-        if(hostData) {
+        if(accountMetadata) {
             const encodedKey = context.env.ENCRYPTION_KEY
             // console.log('Encoded key : ' + encodedKey)
 
-            const plainData = await mcDecrypt(hostData, encodedKey)
-            const hostMetadata = JSON.parse(plainData)
+            const plainData = await mcDecrypt(accountMetadata, encodedKey)
+            accountMetadata = JSON.parse(plainData)
 
-            let url = hostMetadata.host + payload.uri
+            let url = payload.baseUrl + payload.uri
 
             if(payload.queryParams) {
                 const searchParams = new URLSearchParams(payload.queryParams)
                 url += `?${searchParams.toString()}`
             }
 
-            mcCfLog(`${MODULE_NAME} :: Target url : ` + url)
+            mcCfLog(logPrefix, `Target url : ` + url)
 
             const headers = {
                 'Accept': 'application/json'
+            }
+
+            if(accountMetadata.headers) {
+                Object.assign(headers, accountMetadata.headers)
             }
 
             if(payload.headers) {
                 Object.assign(headers, payload.headers)
             }
 
-            const auth = hostMetadata.auth
+            const auth = accountMetadata.auth   
 
             if (auth) {
                 if (auth.type === 'bearer') {
@@ -83,8 +87,8 @@ export async function onRequestPost(context) {
                 } else if (auth.type === 'digest') {
                     // For Digest Auth, we need to make an initial request to get the nonce
                     const resp = await fetch(url, { headers })
-                    mcCfLog(`${MODULE_NAME} :: Inital response code from target url : `, resp.status)
-                    // mcCfLog(`${MODULE_NAME} :: Headers : `, resp.headers)
+                    mcCfLog(logPrefix, `Inital response code from target url : `, resp.status)
+                    // mcCfLog(logPrefix, `Headers : `, resp.headers)
 
                     if (resp.status === 401 && resp.headers.has('www-authenticate')) {
                         const wwwAuthnHeaderDetails = resp.headers.get('www-authenticate').substring(7).split(',').reduce(
@@ -97,14 +101,14 @@ export async function onRequestPost(context) {
                                             )
                         // wwwAuthnHeaderDetails.realm = wwwAuthnHeaderDetails['Digest realm']
 
-                        mcCfLog(`${MODULE_NAME} :: 'www-authenticate' headers details : \n`, mcGetPrettyPrint(wwwAuthnHeaderDetails))
+                        mcCfLog(logPrefix, `'www-authenticate' headers details : \n`, mcGetPrettyPrint(wwwAuthnHeaderDetails))
             
                         const ha1Text = `${auth.username}:${wwwAuthnHeaderDetails.realm}:${auth.pwd}`
-                        // mcCfLog(`${MODULE_NAME} :: ha1 text : `, ha1Text)
+                        // mcCfLog(logPrefix, `ha1 text : `, ha1Text)
                         const ha1 = await digestHash(ha1Text)
 
                         const ha2Text = `${payload.method}:${new URL(url).pathname}`
-                        // mcCfLog(`${MODULE_NAME} :: ha2 text : `, ha2Text)
+                        // mcCfLog(logPrefix, `ha2 text : `, ha2Text)
                         const ha2 = await digestHash(ha2Text)
 
                         const nonceCount = '00000001';
@@ -125,10 +129,65 @@ export async function onRequestPost(context) {
             
                         headers['Authorization'] = `Digest ${headerParts.join(', ')}`
                     }
+                } else if (auth.type === 'oauth2') {
+                    const tokenEndpoint = auth.tokenEndpoint
+                    const clientId = auth.clientId
+                    const clientSecret = auth.clientSecret
+                    const scopes = auth.scopes ? auth.scopes : []   
+    
+                    const headers = {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+    
+                    const body = new URLSearchParams({
+                        'grant_type': 'client_credentials',
+                        'client_id': clientId,
+                        'client_secret': clientSecret,
+                        'scope': scopes.join(' ')
+                    })
+    
+                    const tokenResp = await fetch(tokenEndpoint, {
+                        method: 'POST',
+                        headers,
+                        body
+                    })
+    
+                    if (tokenResp.status === 200) {
+                        const tokenRespJson = await tokenResp.json()
+                        headers['Authorization'] = `Bearer ${tokenRespJson.access_token}`
+                    } else {
+                        return mcCfGetFailureResponse(McErrorCodes.AUTH_FAILURE, `Failed to get oauth2 token. Status code : ${tokenResp.status}`)
+                    }
+                } else if (auth.type === 'oauth2-mongo') {
+                    const tokenEndpoint = auth.tokenEndpoint
+                    const clientId = auth.clientId
+                    const clientSecret = auth.clientSecret
+    
+                    const headers1 = {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`) 
+                    }
+    
+                    const body = new URLSearchParams({
+                        'grant_type': 'client_credentials',
+                    })
+    
+                    const tokenResp = await fetch(tokenEndpoint, {
+                        method: 'POST',
+                        headers: headers1,
+                        body
+                    })
+    
+                    if (tokenResp.status === 200) {
+                        const tokenRespJson = await tokenResp.json()
+                        headers['Authorization'] = `Bearer ${tokenRespJson.access_token}`
+                    } else {
+                        return mcCfGetFailureResponse(McErrorCodes.AUTH_FAILURE, `Failed to get oauth2 token. Status code : ${tokenResp.status}`)
+                    }
                 }
-            }
+            } 
 
-            mcCfLog(`${MODULE_NAME} :: Headers : \n`, mcGetPrettyPrint(headers))
+            // mcCfLog(logPrefix, `Headers : \n`, mcGetPrettyPrint(headers))
 
             let data = null
 
@@ -147,7 +206,7 @@ export async function onRequestPost(context) {
                 }
             )
 
-            mcCfLog(`${MODULE_NAME} :: Response code from target url : `, resp1.status)
+            mcCfLog(logPrefix, `Response code from target url : `, resp1.status)
         
             return mcCfGetResponse(
                 {
@@ -156,10 +215,10 @@ export async function onRequestPost(context) {
                 }
             )
         } else {
-            return mcCfGetFailureResponse(McErrorCodes.RECORD_NOT_FOUND, `Host '${hostId}' not found.`)
+            return mcCfGetFailureResponse(McErrorCodes.RECORD_NOT_FOUND, `Account '${accountId}' not found.`)
         }
     } catch (err) {
-        mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
+        mcCfLog(logPrefix, `${err.message}\n${err.stack}`)
 
         return mcCfGetFailureResponse(McErrorCodes.UNKNOWN_ERROR, 'Unknown error.')
     }

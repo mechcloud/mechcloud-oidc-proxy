@@ -10,14 +10,14 @@ import {
    mcEncrypt
 } from "@mechcloud/shared-cloudflare-js"
 
-const MODULE_NAME = 'hostId.js'
+const logPrefix = 'accountId.js :: '
 
-// handler for loading host details
+// handler for loading account details
 export async function onRequestGet(context) {
-   mcCfLog(`${MODULE_NAME} :: Getting host details ..`)
+   mcCfLog(logPrefix, `Getting account details ..`)
 
-   const hostId = context.params.hostId
-   mcCfLog(`${MODULE_NAME} :: Host id : ` + hostId)
+   const accountId = context.params.accountId
+   mcCfLog(logPrefix, `Account id : ` + accountId)
 
    // mcCfLog(context.env)
    
@@ -25,7 +25,7 @@ export async function onRequestGet(context) {
       const encodedKey = context.env.ENCRYPTION_KEY
       // mcCfLog('Encoded key : ' + encodedKey)
       
-      const encrytedData = await context.env.HOSTS.get(hostId)
+      const encrytedData = await context.env.ACCOUNTS.get(accountId)
       if(encrytedData) {
          mcCfLog('Encrypted data from kv : ' + encrytedData)
          
@@ -35,11 +35,11 @@ export async function onRequestGet(context) {
       } else {
          return mcCfGetFailureResponse(
             McErrorCodes.RECORD_NOT_FOUND, 
-            `Host '${hostId}' not found.`
+            `Account '${accountId}' not found.`
          )
       }
    } catch (err) {
-      mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
+      mcCfLog(logPrefix, `${err.message}\n${err.stack}`)
 
       return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
@@ -48,21 +48,21 @@ export async function onRequestGet(context) {
    }
 }
 
-// handler for updating host details
+// handler for updating account details
 export async function onRequestPut(context) {
-   mcCfLog(`${MODULE_NAME} :: Updating host details ..`)
+   mcCfLog(logPrefix, `Updating account details ..`)
 
-   const hostId = context.params.hostId
-   mcCfLog(`${MODULE_NAME} :: Host id : ` + hostId)
+   const accountId = context.params.accountId
+   mcCfLog(logPrefix, `Account id : ` + accountId)
 
    const originalPayload = await context.request.json()
-   mcCfLog(`${MODULE_NAME} :: Original host updates : `, mcGetPrettyPrint(originalPayload))
+   mcCfLog(logPrefix, `Original account updates : `, mcGetPrettyPrint(originalPayload))
    
    try {
-      const encryptedData = await context.env.HOSTS.get(hostId)
+      const encryptedData = await context.env.ACCOUNTS.get(accountId)
       
       if(encryptedData) {
-         originalPayload.id = hostId
+         originalPayload.id = accountId
 
          const inputData = JSON.stringify(originalPayload)
 
@@ -71,17 +71,17 @@ export async function onRequestPut(context) {
 
          const encryptedData = await mcEncrypt(inputData, encodedKey)
 
-         await context.env.HOSTS.put(hostId, encryptedData)
+         await context.env.ACCOUNTS.put(accountId, encryptedData)
 
-         return mcCfGetResponse({msg: 'Host details updated successfully.'})
+         return mcCfGetResponse({msg: 'Account details updated successfully.'})
       } else {
          return mcCfGetFailureResponse(
             McErrorCodes.RECORD_NOT_FOUND, 
-            `Host '${hostId}' not found.`
+            `Account '${accountId}' not found.`
          )
       }
    } catch (err) {
-      mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
+      mcCfLog(logPrefix, `${err.message}\n${err.stack}`)
 
       return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
@@ -90,28 +90,28 @@ export async function onRequestPut(context) {
    }
 }
 
-// handle for delete host
+// handle for delete account
 export async function onRequestDelete(context) {
-   mcCfLog(`${MODULE_NAME} :: Deleting host details ..`)
+   mcCfLog(logPrefix, `Deleting account details ..`)
 
-   const hostId = context.params.hostId
-   mcCfLog(`${MODULE_NAME} :: Host id : ` + hostId)
+   const accountId = context.params.accountId
+   mcCfLog(logPrefix, `Account id : ` + accountId)
    
    try {
-      const encryptedData = await context.env.HOSTS.get(hostId)
+      const encryptedData = await context.env.ACCOUNTS.get(accountId)
       
       if(encryptedData) {
-         await context.env.HOSTS.delete(hostId)
+         await context.env.ACCOUNTS.delete(accountId)
 
-         return mcCfGetResponse({ msg: `Host '${hostId}' deleted successfully` })
+         return mcCfGetResponse({ msg: `Account '${accountId}' deleted successfully` })
       } else {
          return mcCfGetFailureResponse(
             McErrorCodes.RECORD_NOT_FOUND, 
-            `Host '${hostId}' not found.`
+            `Account '${accountId}' not found.`
          )
       }
    } catch (err) {
-      mcCfLog(`${MODULE_NAME} :: ${err.message}\n${err.stack}`)
+      mcCfLog(logPrefix, `${err.message}\n${err.stack}`)
       
       return mcCfGetFailureResponse(
          McErrorCodes.INTERNAL_ERROR, 
