@@ -18,20 +18,30 @@ cd mechcloud-oidc-proxy
 pnpm install 
 ```
 
-* Login to your Cloudflare account using wrangler and deploy this project -
+* Login to your Cloudflare account using wrangler -
 ```
 cd mechcloud-oidc-proxy
 
 pnpm wrangler login
-
-pnpm deploy1
 ```
 
-* Create `ACCOUNTS` kv namespace in your Cloudflare account -
+* Create `accounts` kv namespace in your Cloudflare account -
 ```
 cd mechcloud-oidc-proxy
 
-pnpm wrangler kv:namespace create ACCOUNTS
+pnpm wrangler kv:namespace create accounts
+```
+
+* Update newly created kv namespace id in `wrangler.toml` file -
+```
+[[kv_namespaces]]
+binding = "ACCOUNTS"
+id = "<kv_namepace_id>"
+```
+
+* Deploy this project -
+```
+pnpm deploy1
 ```
 
 For rest of the instructions, we will assume that this proxy is configured with `oidc-proxy.mechcloud.lab` custom domain in Cloudflare. Update this to whatever custom domain you selected for this proxy after deploying it.
