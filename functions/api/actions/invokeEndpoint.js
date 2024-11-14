@@ -195,9 +195,9 @@ export async function onRequestPost(context) {
                 headers['Content-Type'] = 'application/json'
 
                 data = JSON.stringify(payload.body)
+                
+                mcCfLog(logPrefix, `External API Request : \n`, mcGetPrettyPrint(data))
             }
-
-            // mcCfLog(logPrefix, `External API Request : \n`, mcGetPrettyPrint(data))
 
             const resp1 = await fetch(
                 url, 
