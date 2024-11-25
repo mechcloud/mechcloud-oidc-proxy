@@ -1,7 +1,7 @@
 # mechcloud-oidc-proxy
 This project is a `Cloudflare Pages Functions` project which should be deployed in your Cloudflare account. It is used by MechCloud to publish the static version of a site, purging Cloudflare cache and as a universal OpenID Connect (OIDC) proxy to communicate with any third party API without storing any type of short/long term credentials for such APIs.
 
-This proxy is configured to trust MechCloud IdP (powered by `Auth0`) by default (See `OAUTH2_PROXY_HOST` variable in `wrangler.toml` file). However, if you want you can use your own IdP as well with this proxy but that is available for paid plans only.
+This proxy is configured to trust MechCloud IdP (powered by `Auth0`) by default (See `OAUTH2_PROXY_HOST` variable in `wrangler.toml` file). You can use your own IdP (Identity Provider) as well with this proxy but that is available for paid plans only.
 
 ## Cloudflare secrets required for this proxy
 This proxy has dependency on the following Cloudflare secrets (encrypted environment variables) -
@@ -215,3 +215,5 @@ curl --location --request DELETE 'https://oidc-proxy.mechcloud.lab/api/accounts/
 --header 'Authorization: Bearer <mechcloud_jwt_token>'
 ```
 
+## References
+* [Cloudflare API Token Permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)
