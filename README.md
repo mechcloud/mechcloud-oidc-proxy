@@ -216,4 +216,6 @@ curl --location --request DELETE 'https://oidc-proxy.mechcloud.lab/api/accounts/
 ```
 
 ## References
+* [New Cloudflare API Docs](https://developers.cloudflare.com/api-next/)
 * [Cloudflare API Token Permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)
+
