@@ -8,7 +8,8 @@ import {
    mcCfGetUnauthorizedResponse,
    mcGetAsyncStore,
    errorHandling,
-   validate_token
+   validate_token,
+   mcCfGetResponse
 } from '@mechcloud/shared-cloudflare-js'
 
 // const MODULE_NAME = 'api_middleware.js'
@@ -25,11 +26,12 @@ async function validate_email(context) {
       mcCfLog(logPrefix, `Email : ` + email)
 
       if(!context.env.ALLOWED_USERS.split(',').includes(email)) {
-         const msg = `User '${email}' is not authorized.`
+         // const msg = `User '${email}' is not authorized to invoke OIDC Proxy.`
          
-         mcCfLogError(msg)
+         // mcCfLogError(msg)
 
-         return mcCfGetUnauthorizedResponse(msg)
+         // return mcCfGetUnauthorizedResponse(msg)
+         return mcCfGetResponse(`User '${email}' is not authorized to invoke OIDC Proxy.`, 403)
       }
 
       return await context.next()
