@@ -23,6 +23,7 @@ async function validate_email(context) {
    try {
       const email = asyncStore.email
 
+      mcCfLog(logPrefix, `Allowed users : ` + context.env.ALLOWED_USERS)
       mcCfLog(logPrefix, `Email : ` + email)
 
       if(!context.env.ALLOWED_USERS.split(',').includes(email)) {
