@@ -28,6 +28,6 @@
       "eslint": "^9.22.0",
       "eslint-plugin-cflint": "^1.0.0",
       "vite": "^6.2.2",
-      "wrangler": "^4.2.0"
+      "wrangler": "^4.7.2"
    }
 }

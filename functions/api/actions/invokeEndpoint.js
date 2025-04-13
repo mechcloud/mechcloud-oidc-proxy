@@ -209,6 +209,17 @@ export async function onRequestPost(context) {
             )
 
             mcCfLog(logPrefix, `Response code from target url : `, resp1.status)
+
+            if(payload.method === 'DELETE' && resp1.status === 200) {
+                return mcCfGetResponse(
+                    {
+                        status: resp1.status,
+                        data: {
+                            success: true
+                        }
+                    }
+                )
+            }
         
             return mcCfGetResponse(
                 {

@@ -23,10 +23,12 @@ async function validate_email(context) {
    try {
       const email = asyncStore.email
 
-      mcCfLog(logPrefix, `Allowed users : ` + context.env.ALLOWED_USERS)
       mcCfLog(logPrefix, `Email : ` + email)
+      mcCfLog(logPrefix, `Platform admin : ` + context.env.PLATFORM_ADMIN)
+      const allowedUsers = [context.env.PLATFORM_ADMIN, ...context.env.ALLOWED_USERS.split(',')]
+      mcCfLog(logPrefix, `Allowed users : ` + allowedUsers)
 
-      if(!context.env.ALLOWED_USERS.split(',').includes(email)) {
+      if(!allowedUsers.includes(email)) {
          // const msg = `User '${email}' is not authorized to invoke OIDC Proxy.`
          
          // mcCfLogError(msg)
