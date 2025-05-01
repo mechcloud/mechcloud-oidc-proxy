@@ -6,9 +6,8 @@
    "scripts": {
       "lint": "eslint --quiet functions/",
       "lint-build": "eslint --quiet functions/ && vite build",
-      "serve": "vite serve --host :: --strictPort --port 6443",
       "build": "vite build",
-      "wrangler-serve": "wrangler pages dev --live-reload --port 8890",
+      "wrangler-serve": "wrangler pages dev --live-reload --port 9002",
       "deploy1": "wrangler pages deploy --branch main",
       "tail-logs": "wrangler pages deployment tail --project-name mechcloud-oidc-proxy",
       "wrangler-version": "wrangler version"
