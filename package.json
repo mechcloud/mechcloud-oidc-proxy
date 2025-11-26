@@ -15,20 +15,20 @@
    "dependencies": {
       "@mechcloud/shared-cloudflare-js": "link:..\\..\\shared\\mechcloud-shared-cloudflare-js",
       "@mechcloud/shared-js": "link:..\\..\\shared\\mechcloud-shared-js",
-      "axios": "^1.8.4",
+      "axios": "^1.12.2",
       "digest-fetch": "^3.1.1",
-      "jose": "^6.0.10"
+      "jose": "^6.1.0"
    },
    "resolutions1": {
       "@mechcloud/shared-js": "^1.0.9",
       "@mechcloud/shared-cloudflare-js": "^1.0.9"
    },
    "devDependencies": {
-      "@eslint/js": "^9.22.0",
-      "@vitejs/plugin-basic-ssl": "^2.0.0",
-      "eslint": "^9.22.0",
+      "@eslint/js": "^9.37.0",
+      "@vitejs/plugin-basic-ssl": "^2.1.0",
+      "eslint": "^9.37.0",
       "eslint-plugin-cflint": "^1.0.0",
-      "vite": "^6.2.2",
-      "wrangler": "^4.12.0"
+      "vite": "^7.1.9",
+      "wrangler": "^4.42.1"
    }
 }
